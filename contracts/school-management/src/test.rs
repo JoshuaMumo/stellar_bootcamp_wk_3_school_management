@@ -79,13 +79,9 @@ fn test_update_student_class() {
     let setup_result = setup();
 
     let name = String::from_str(&setup_result.env, "Sib");
+    let class_name = Class::College;
 
-    // register with College class
-    let student_id = setup_result.client.register_student(
-        &name,
-        &Class::College,
-        &setup_result.student_wallet,
-    );
+    let student_id = setup_result.client.register_student(&name,&class_name,&setup_result.student_wallet,);
 
     // confirm starting class is College
     let student_before = setup_result.client.get_student(&student_id);
@@ -108,8 +104,9 @@ fn test_get_payment_history() {
     setup_result.token_client.mint(&setup_result.student_wallet, &10_000);
 
     let name = String::from_str(&setup_result.env, "Sib");
+    let class_name = Class::College;
 
-    let student_id = setup_result.client.register_student(&name,&Class::College,&setup_result.student_wallet);
+    let student_id = setup_result.client.register_student(&name,&class_name,&setup_result.student_wallet);
 
     // make two payments
     setup_result.client.make_payment(&student_id, &1_000);
@@ -127,8 +124,9 @@ fn test_remove_student() {
     let setup_result = setup();
 
     let name = String::from_str(&setup_result.env, "Sib");
+    let class_name = Class::College;
 
-    let student_id = setup_result.client.register_student(&name,&Class::College,&setup_result.student_wallet);
+    let student_id = setup_result.client.register_student(&name,&class_name,&setup_result.student_wallet);
 
     // confirm student exists before removal
     let student = setup_result.client.get_student(&student_id);
