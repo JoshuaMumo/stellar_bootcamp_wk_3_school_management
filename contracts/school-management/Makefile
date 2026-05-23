@@ -9,7 +9,7 @@ test: build
 
 build:
 	stellar contract build
-	@ls -l target/wasm32v1-none/release/*.wasm
+	@ls -l ../../target/wasm32v1-none/release/*.wasm
 
 fmt:
 	cargo fmt --all
@@ -29,7 +29,7 @@ upload: build
 
 deploy:
 	stellar contract deploy \
-	  --wasm ../../target/wasm32v1-none/release/school_management.wasm \
+	  --wasm-hash ${WASM_HASH} \
 	  --network ${TESTNET} \
 	  --source-account ${SOURCE_TESTNET} \
 	  -- \
