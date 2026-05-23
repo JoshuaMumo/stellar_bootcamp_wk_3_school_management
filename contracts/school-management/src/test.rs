@@ -73,3 +73,71 @@ fn test_make_payment() {
     assert_eq!(student.total_paid, amount);
 
 }
+
+#[test]
+fn test_update_student_class() {
+    let setup_result = setup();
+
+    let name = String::from_str(&setup_result.env, "Sib");
+
+    // register with College class
+    let student_id = setup_result.client.register_student(
+        &name,
+        &Class::College,
+        &setup_result.student_wallet,
+    );
+
+    // confirm starting class is College
+    let student_before = setup_result.client.get_student(&student_id);
+    assert_eq!(student_before.class_name, Class::College);
+
+    // update to Highschool
+    setup_result.client.update_student_class(&student_id, &Class::Highschool);
+
+    let student_after = setup_result.client.get_student(&student_id);
+
+    // class must be updated
+    assert_eq!(student_after.class_name, Class::Highschool)
+}
+
+#[test]
+fn test_get_payment_history() {
+    let setup_result = setup();
+
+    // mint tokens so make_payment can transfer
+    setup_result.token_client.mint(&setup_result.student_wallet, &10_000);
+
+    let name = String::from_str(&setup_result.env, "Sib");
+
+    let student_id = setup_result.client.register_student(&name,&Class::College,&setup_result.student_wallet);
+
+    // make two payments
+    setup_result.client.make_payment(&student_id, &1_000);
+
+    setup_result.client.make_payment(&student_id, &2_000);
+
+    let history = setup_result.client.get_payment_history(&student_id);
+
+    // two payments were made so history must have exactly two entries
+    assert_eq!(history.len(), 2);
+}
+
+#[test]
+fn test_remove_student() {
+    let setup_result = setup();
+
+    let name = String::from_str(&setup_result.env, "Sib");
+
+    let student_id = setup_result.client.register_student(&name,&Class::College,&setup_result.student_wallet);
+
+    // confirm student exists before removal
+    let student = setup_result.client.get_student(&student_id);
+    assert_eq!(student.student_id, student_id);
+
+    // remove the student
+    setup_result.client.remove_student(&student_id);
+
+    // try_get_student returns a Result so we can assert it is an error
+    let result = setup_result.client.try_get_student(&student_id);
+    assert!(result.is_err(), "student should not exist after removal");
+}

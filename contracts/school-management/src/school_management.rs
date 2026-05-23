@@ -91,4 +91,33 @@ impl SchoolManagement {
 
         Ok(())
     }
+    pub fn update_student_class(env: Env, student_id: u64, new_class: Class) -> Result<(), ContractError> {
+
+    let mut student = env.storage().persistent().get::<DataKey, StudentDetails>(&DataKey::Student(student_id)).ok_or(ContractError::StudentNotFound)?;
+
+    student.class_name = new_class;
+
+    env.storage().persistent().set(&DataKey::Student(student_id), &student);
+
+    Ok(())
+}
+
+pub fn get_payment_history(env: Env, student_id: u64) -> Vec<Payment> {
+
+    env.storage().persistent().get(&DataKey::StudentPayments(student_id)).unwrap_or(Vec::new(&env))
+}
+
+pub fn remove_student(env: Env, student_id: u64) -> Result<(), ContractError> {
+
+    if !env.storage().persistent().has(&DataKey::Student(student_id))
+    {
+        return Err(ContractError::StudentNotFound);
+    }
+
+    env.storage().persistent().remove(&DataKey::Student(student_id));
+
+    env.storage().persistent().remove(&DataKey::StudentPayments(student_id));
+
+    Ok(())
+}
 }
