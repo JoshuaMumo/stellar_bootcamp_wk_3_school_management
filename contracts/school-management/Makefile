@@ -22,14 +22,14 @@ upload: build
 	@stellar contract install \
 	  --network ${TESTNET} \
 	  --source ${SOURCE_TESTNET} \
-	  --wasm ../../target/wasm32v1-none/release/hello_world.wasm > upload.log 2>&1 || (cat upload.log && exit 1)
+	  --wasm ../../target/wasm32v1-none/release/school_management.wasm > upload.log 2>&1 || (cat upload.log && exit 1)
 	@grep -oE "[a-f0-9]{64}" upload.log | tail -n 1 > wasm_hash.txt
 	@echo "✅ Wasm hash saved to wasm_hash.txt"
 	@cat wasm_hash.txt
 
 deploy:
 	stellar contract deploy \
-	  --wasm-hash ${WASM_HASH} \
+	  --wasm ../../target/wasm32v1-none/release/school_management.wasm \
 	  --network ${TESTNET} \
 	  --source-account ${SOURCE_TESTNET} \
 	  -- \
